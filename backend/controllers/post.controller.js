@@ -167,3 +167,54 @@ export const getLikedPosts = async (req, res) => {
     return render500Error(res);
   }
 };
+
+export const getFollowingPosts = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) render404Error(res, "User not found!");
+
+    const following = user.following;
+    const feedPosts = await Post.find({ user: { $in: following } })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "user",
+        select: "-password",
+      })
+      .populate({
+        path: "comments.user",
+        select: "-password",
+      });
+
+    render200Success(res, null, feedPosts);
+  } catch (error) {
+    console.error(`Error in getFollowingPosts method: ${error.message}`);
+    return render500Error(res);
+  }
+};
+
+export const getUserPosts = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) render404Error(res, "User not found!");
+
+    const posts = await Post.find({ user: user._id })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "user",
+        select: "-password",
+      })
+      .populate({
+        path: "comments.user",
+        select: "-password",
+      });
+
+    return render200Success(res, null, posts);
+  } catch (error) {
+    console.error(`Error in getFollowingPosts method: ${error.message}`);
+    return render500Error(res);
+  }
+};
