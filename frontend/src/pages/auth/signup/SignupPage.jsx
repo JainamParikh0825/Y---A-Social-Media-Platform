@@ -7,25 +7,51 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
-    fullName: "",
+    fullname: "",
     password: "",
+  });
+
+  // used for creating, deleting and updating the data
+  const { mutate, isError, isPending, error } = useMutation({
+    mutationFn: async ({ email, username, fullname, password }) => {
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, username, fullname, password }),
+        });
+
+        const data = await res.json();
+
+        if (data.error) throw new Error(data.error);
+
+        toast.success("Account created successfully!");
+        setFormData({ email: "", fullname: "", password: "", username: "" });
+        return data;
+      } catch (error) {
+        console.error(error);
+        toast.error(error.message);
+      }
+    },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    mutate(formData);
   };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const isError = false;
 
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen px-10">
@@ -68,9 +94,9 @@ const SignupPage = () => {
                 type="text"
                 className="grow"
                 placeholder="Full Name"
-                name="fullName"
+                name="fullname"
                 onChange={handleInputChange}
-                value={formData.fullName}
+                value={formData.fullname}
               />
             </label>
           </div>
@@ -86,9 +112,9 @@ const SignupPage = () => {
             />
           </label>
           <button className="btn rounded-full btn-primary text-white">
-            Sign up
+            {isPending ? "Loading..." : "Sign Up"}
           </button>
-          {isError && <p className="text-red-500">Something went wrong</p>}
+          {isError && <p className="text-red-500">{error.message}</p>}
         </form>
         <div className="flex flex-col lg:w-2/3 gap-2 mt-4">
           <p className="text-white text-lg">Already have an account?</p>
