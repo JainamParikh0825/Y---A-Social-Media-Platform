@@ -2,6 +2,7 @@ import Post from "./Post";
 import PostSkeleton from "../skeletons/PostSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const Posts = ({ feedType }) => {
   const getPostEndpoint = () => {
@@ -33,7 +34,8 @@ const Posts = ({ feedType }) => {
 
         return data.data;
       } catch (error) {
-        throw new Error(error);
+        console.error(error);
+        toast.error(error.message);
       }
     },
   });

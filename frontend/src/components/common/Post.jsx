@@ -25,7 +25,8 @@ const Post = ({ post }) => {
 
         toast.success("Post deleted successfully!");
       } catch (error) {
-        throw new Error(error);
+        console.error(error);
+        toast.error(error.message);
       }
     },
     onSuccess: () => {
