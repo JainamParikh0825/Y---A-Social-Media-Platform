@@ -199,7 +199,7 @@ const Post = ({ post }) => {
                         <div className="flex flex-col">
                           <div className="flex items-center gap-1">
                             <span className="font-bold">
-                              {comment.user.fullName}
+                              {comment.user.fullname}
                             </span>
                             <span className="text-gray-700 text-sm">
                               @{comment.user.username}
