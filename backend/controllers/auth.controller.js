@@ -1,4 +1,4 @@
-import User from "../models/User.model.js";
+import User from "../models/user.model.js";
 import { render400Error, render500Error } from "../utils/error.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/jwt.js";
